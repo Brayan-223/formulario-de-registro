@@ -8,14 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
   let aficiones = [];
   const usuarios = [];
 
-  console.log('Script cargado y DOM completamente listo');
-
   agregarBtn.addEventListener('click', () => {
     const aficion = aficionInput.value.trim();
     if (aficion !== '') {
       aficiones.push(aficion);
-      console.log(`Afición agregada: ${aficion}`);
-      console.log('Aficiones actuales:', aficiones);
 
       const div = document.createElement('div');
       div.className = 'd-flex justify-content-between align-items-center list-group-item aficion-item';
@@ -30,8 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const index = aficiones.indexOf(aficion);
         if (index !== -1) {
           aficiones.splice(index, 1);
-          console.log(`Afición eliminada: ${aficion}`);
-          console.log('Aficiones restantes:', aficiones);
         }
         listaAficiones.removeChild(div);
       });
@@ -43,22 +37,21 @@ document.addEventListener('DOMContentLoaded', () => {
       aficionInput.value = '';
       mostrarError('errorAficiones', '');
     } else {
-      console.warn('Intento de agregar afición vacía');
+      mostrarError('errorAficiones', 'Afición vacía no permitida');
     }
   });
 
   function mostrarError(id, mensaje) {
-    if (mensaje) console.warn(`Error en ${id}: ${mensaje}`);
-    document.getElementById(id).textContent = mensaje;
+    if (mensaje) {
+      document.getElementById(id).textContent = mensaje;
+    }
   }
 
   function limpiarErrores() {
-    console.log('Limpiando errores del formulario...');
     document.querySelectorAll('.text-danger').forEach(el => el.textContent = '');
   }
 
   function validarFormulario(datos) {
-    console.log('Validando formulario con datos:', datos);
     let valido = true;
 
     const regexUsuario = /^[a-zA-Z][a-zA-Z0-9]{4,9}$/;
@@ -108,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
       valido = false;
     }
 
-    console.log('Resultado validación:', valido ? 'Formulario válido' : 'Formulario con errores');
     return valido;
   }
 
@@ -129,8 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (validarFormulario(datos)) {
       usuarios.push(datos);
-      console.log('Usuario registrado correctamente:', datos);
-      console.log('Usuarios registrados:', usuarios);
 
       const item = document.createElement('li');
       item.classList.add('list-group-item');
@@ -146,10 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
       form.reset();
       listaAficiones.innerHTML = '';
       aficiones = [];
-
-      console.log('Formulario reseteado y aficiones limpiadas');
-    } else {
-      console.warn('El formulario no se envió por errores de validación');
     }
   });
 });
