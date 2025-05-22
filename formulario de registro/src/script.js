@@ -8,55 +8,62 @@ document.addEventListener('DOMContentLoaded', () => {
   let aficiones = [];
   const usuarios = [];
 
-  // Agrega una nueva afición a la lista
+  console.log('Script cargado y DOM completamente listo');
+
   agregarBtn.addEventListener('click', () => {
     const aficion = aficionInput.value.trim();
     if (aficion !== '') {
-      agregarAficion(aficion);
+      aficiones.push(aficion);
+      console.log(`Afición agregada: ${aficion}`);
+      console.log('Aficiones actuales:', aficiones);
+
+      const div = document.createElement('div');
+      div.className = 'd-flex justify-content-between align-items-center list-group-item aficion-item';
+
+      const texto = document.createElement('span');
+      texto.textContent = aficion;
+
+      const botonEliminar = document.createElement('button');
+      botonEliminar.textContent = 'Eliminar';
+      botonEliminar.className = 'btn btn-danger btn-sm ms-2';
+      botonEliminar.addEventListener('click', () => {
+        const index = aficiones.indexOf(aficion);
+        if (index !== -1) {
+          aficiones.splice(index, 1);
+          console.log(`Afición eliminada: ${aficion}`);
+          console.log('Aficiones restantes:', aficiones);
+        }
+        listaAficiones.removeChild(div);
+      });
+
+      div.appendChild(texto);
+      div.appendChild(botonEliminar);
+      listaAficiones.appendChild(div);
+
       aficionInput.value = '';
       mostrarError('errorAficiones', '');
+    } else {
+      console.warn('Intento de agregar afición vacía');
     }
   });
 
-  function agregarAficion(aficion) {
-    aficiones.push(aficion);
-
-    const li = document.createElement('li');
-    li.className = 'list-group-item d-flex justify-content-between align-items-center';
-
-    const span = document.createElement('span');
-    span.textContent = aficion;
-
-    const btnEliminar = document.createElement('button');
-    btnEliminar.textContent = 'Eliminar';
-    btnEliminar.className = 'btn btn-danger btn-sm ms-2';
-    btnEliminar.addEventListener('click', () => {
-      listaAficiones.removeChild(li);
-      aficiones = aficiones.filter(a => a !== aficion);
-    });
-
-    li.appendChild(span);
-    li.appendChild(btnEliminar);
-    listaAficiones.appendChild(li);
-  }
-
   function mostrarError(id, mensaje) {
-    const elemento = document.getElementById(id);
-    if (elemento) {
-      elemento.textContent = mensaje;
-    }
+    if (mensaje) console.warn(`Error en ${id}: ${mensaje}`);
+    document.getElementById(id).textContent = mensaje;
   }
 
   function limpiarErrores() {
+    console.log('Limpiando errores del formulario...');
     document.querySelectorAll('.text-danger').forEach(el => el.textContent = '');
   }
 
   function validarFormulario(datos) {
+    console.log('Validando formulario con datos:', datos);
     let valido = true;
 
     const regexUsuario = /^[a-zA-Z][a-zA-Z0-9]{4,9}$/;
     if (!regexUsuario.test(datos.usuario)) {
-      mostrarError('errorUsuario', 'Debe comenzar con letra, tener 5-10 caracteres y solo números al final.');
+      mostrarError('errorUsuario', 'Debe comenzar con letra, 5-10 caracteres, solo números al final.');
       valido = false;
     }
 
@@ -91,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
       valido = false;
     }
 
-    if (datos.url && !/^https?:\/\/.+/.test(datos.url)) {
+    if (datos.url !== '' && !/^https?:\/\/.+/.test(datos.url)) {
       mostrarError('errorUrl', 'Debe ingresar una URL válida que comience con http:// o https://');
       valido = false;
     }
@@ -101,10 +108,10 @@ document.addEventListener('DOMContentLoaded', () => {
       valido = false;
     }
 
+    console.log('Resultado validación:', valido ? 'Formulario válido' : 'Formulario con errores');
     return valido;
   }
 
-  // Manejo del envío del formulario
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     limpiarErrores();
@@ -122,10 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (validarFormulario(datos)) {
       usuarios.push(datos);
+      console.log('Usuario registrado correctamente:', datos);
+      console.log('Usuarios registrados:', usuarios);
 
-      // Mostrar datos del nuevo usuario registrado
       const item = document.createElement('li');
-      item.className = 'list-group-item';
+      item.classList.add('list-group-item');
       item.innerHTML = `
         <strong>${datos.usuario}</strong> - ${datos.comuna}<br>
         Dirección: ${datos.direccion}<br>
@@ -135,10 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
       registro.appendChild(item);
 
-      // Resetear formulario y limpiar lista de aficiones
       form.reset();
       listaAficiones.innerHTML = '';
       aficiones = [];
+
+      console.log('Formulario reseteado y aficiones limpiadas');
+    } else {
+      console.warn('El formulario no se envió por errores de validación');
     }
   });
 });
